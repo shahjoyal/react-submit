@@ -633,3 +633,392 @@ html, body { overflow: hidden; }
   box-shadow: 0 6px 18px rgba(239,68,68,0.16);
 }
 #submitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+/* =========================
+   MOBILE & NARROW-SCREEN UX
+   Append to end of index.css
+   ========================= */
+
+/* ------------------------
+   Global tweaks for touch
+   ------------------------ */
+@media (pointer: coarse) {
+  :root {
+    --input-height: 76px;
+  }
+  button, .unit-btn, .add-coal-overlay, .btn, .input-section .input-box,
+  .flow-input, .timer-input, .total-input, .popup-row input, .popup-row select {
+    -webkit-tap-highlight-color: rgba(0,0,0,0.06);
+    touch-action: manipulation;
+  }
+
+  /* enlarge interactive elements slightly for finger use */
+  .flow-input, .timer-input, .total-input, .input-section .input-box, .popup-row input, .popup-row select {
+    min-height: 44px;
+    height: 44px;
+    padding: 10px;
+    font-size: 16px;
+  }
+  .btn, .navbar button, .unit-btn { min-height: 44px; height: 44px; padding: 10px 14px; font-size: 15px; }
+}
+
+/* ------------------------
+   General small-screen policy
+   - allow scrolling on smaller screens
+   - prevent elements from being clipped
+   - make inputs and buttons full-width when stacked
+   ------------------------ */
+@media (max-width: 980px) {
+  /* allow vertical scroll on small screens (overrides earlier overflow: hidden) */
+  html, body { overflow: auto; touch-action: pan-y; }
+
+  /* hide the fixed sidebar (already in CSS) and reclaim full width */
+  .side-bar { display: none !important; }
+
+  .main-container {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding: 12px !important;
+  }
+
+  /* make header input-section more responsive */
+  .input-section {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+  .input-section label { white-space: normal; flex-basis: 100%; font-size: 14px; }
+  .input-section .input-box { flex: 1 1 160px; width: 100%; }
+
+  /* make popup full width on small screens */
+  .popup-content { width: calc(100% - 32px); margin: 0 16px; }
+
+  /* allow mills grid to scroll horizontally if cramped */
+  .mills-grid {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(96px, 1fr);
+  }
+
+  /* increase left label shrinkability */
+  .diagram-and-mills { grid-template-columns: 100px repeat(6, 1fr); gap: 8px; }
+
+  /* make the diagram and rows stack vertically for narrow phones */
+  .diagram-in-grid { grid-column: 1 / -1; width: 100%; padding: 8px 6px; }
+  .diagram-in-grid .layout { padding: 12px; box-shadow: 0 8px 20px rgba(2,6,23,0.06); }
+
+  /* make bunker grid wrap to fewer columns */
+  .bunkers-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; align-items: center; }
+
+  /* buttons placed on top of bunker should be visible and larger */
+  .top-overlay .add-coal-overlay { width: 48px; height: 48px; font-size: 22px; }
+
+  /* ensure labels do not overflow */
+  .bunker .label { font-size: 13px; padding: 6px 8px; bottom: -16px; }
+
+  /* input fields full width in rows when vertical */
+  .row-box .flow-input, .row-box .timer-input, .row-box .total-input {
+    width: 100%; min-width: 80px; font-size: 15px;
+  }
+
+  /* allow the popup buttons to be stacked on tiny screens */
+  .popup-actions { flex-direction: row-reverse; flex-wrap: wrap; gap: 8px; }
+}
+
+/* ------------------------
+   Extra small phones (narrow)
+   ------------------------ */
+@media (max-width: 420px) {
+  :root {
+    --navbar-height: 56px;
+    --input-height: 84px;
+    --left-label-width: 90px;
+  }
+
+  .navbar h1 { font-size: 16px; }
+  .nav-buttons { gap: 6px; }
+  .input-section { padding: 8px; gap: 6px; }
+  .input-section label { font-size: 13px; }
+
+  /* stack input-section vertically for easiest single-hand use */
+  .input-section { flex-direction: column; align-items: stretch; }
+
+  /* diagram smaller and taller to use vertical space */
+  .diagram-in-grid .layout { height: auto; min-height: 200px; }
+
+  /* bunker svg smaller but ensure label is visible */
+  .bunker svg { width: 94%; max-height: 140px; }
+  .bunker .label { font-size: 12px; padding: 6px 8px; }
+
+  /* make form inputs and buttons full width */
+  .flow-input, .timer-input, .total-input, .input-section .input-box, .popup-row input, .popup-row select {
+    width: 100% !important; box-sizing: border-box;
+  }
+
+  /* popup becomes almost full-screen with comfortable margins */
+  .popup-content { width: calc(100% - 20px); max-width: 520px; padding: 14px; border-radius: 10px; }
+
+  /* increase tappable area on small screens */
+  .btn, .navbar button, .unit-btn { padding: 12px; font-size: 16px; }
+}
+
+/* ------------------------
+   Landscape phones / tablets
+   ------------------------ */
+@media (min-width: 421px) and (max-width: 900px) and (orientation: landscape) {
+  /* make grid show 3 columns of bunkers when in landscape */
+  .bunkers-grid { grid-template-columns: repeat(3, 1fr); }
+  .diagram-in-grid .layout { height: calc(var(--available-height) * 0.56); }
+  .mills-grid { grid-template-columns: 150px repeat(6, 1fr); }
+}
+
+/* ------------------------
+   Accessibility & focus
+   ------------------------ */
+@media (max-width: 980px) {
+  /* make focus outlines more visible for keyboard users on mobile emulators */
+  :focus {
+    outline: 3px solid rgba(14,165,164,0.18);
+    outline-offset: 2px;
+  }
+
+  /* enlarge the timer warning (when blinking) to be readable on phones */
+  .timer-warning { font-size: 14px; padding: 4px 8px; border-radius: 8px; }
+}
+
+/* ------------------------
+   Optional: quick helper classes you can toggle from JS
+   ------------------------ */
+/* use .compact-rows on small screens to reduce per-row heights if space is tight */
+.compact-rows .row-box .flow-input,
+.compact-rows .row-box .timer-input,
+.compact-rows .row-box .total-input {
+  height: 36px; padding: 6px; font-size: 14px;
+}
+
+/* make the layout resilient: allow the diagram box to scroll vertically if it grows */
+@media (max-width: 1100px) {
+  .diagram-in-grid .layout { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+}
+
+/* End of mobile-friendly media-query block */
+/* ==============================================
+   RESPONSIVE POSITIONING FOR ARROW & PLUS BUTTONS
+   ============================================== */
+
+/* Base adjustment — ensures overlay elements stay relative */
+.bunker {
+  position: relative;
+}
+
+/* Default position (desktop) */
+.add-coal-overlay,
+.arrow-overlay {
+  position: absolute;
+  top: 4%;              /* adjust as per your bunker SVG height */
+  right: 10%;
+  transform: translateY(0);
+  transition: top 0.25s ease, transform 0.25s ease;
+}
+
+/* Medium screens (tablet and small laptops) */
+@media (max-width: 980px) {
+  .add-coal-overlay,
+  .arrow-overlay {
+    top: 8%;            /* slightly lower */
+    transform: translateY(4px);
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+}
+
+/* Mobile portrait */
+@media (max-width: 600px) {
+  .add-coal-overlay,
+  .arrow-overlay {
+    top: 12%;           /* go further down for smaller bunkers */
+    transform: translateY(6px);
+    right: 12%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+}
+
+/* Extra-small mobile (<=420px) */
+@media (max-width: 420px) {
+  .add-coal-overlay,
+  .arrow-overlay {
+    top: 16%;           /* even lower */
+    transform: translateY(8px);
+    right: 14%;
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
+}
+
+/* optional: make tap feedback more visible on phones */
+@media (pointer: coarse) {
+  .add-coal-overlay:active,
+  .arrow-overlay:active {
+    transform: translateY(10px) scale(0.96);
+    opacity: 0.9;
+  }
+}
+/* ======================================================
+   OVERLAY FIX + HORIZONTAL-SCROLL FOR NARROW SCREENS
+   Paste at END of index.css
+   ====================================================== */
+
+/* 1) Ensure each bunker is a containing block for overlays */
+.bunker {
+  position: relative; /* ensure absolute children anchor here */
+  -webkit-transform: translateZ(0); /* promote to its own layer to avoid rendering jump */
+}
+
+/* 2) Force overlays to be absolutely positioned INSIDE the bunker.
+   Use !important only to override any earlier `fixed` rules. */
+.add-coal-overlay,
+.arrow-overlay {
+  position: absolute !important;
+  top: 4% !important;       /* default desktop placement */
+  bottom: auto !important;
+  right: 8% !important;
+  transform: translateY(0) !important;
+  transition: top 220ms ease, transform 220ms ease, right 220ms ease;
+  z-index: 40; /* sit above bunker SVG */
+  pointer-events: auto;
+}
+
+/* Prevent any global fixed rule from applying (defensive) */
+.add-coal-overlay.fixed,
+.arrow-overlay.fixed {
+  position: absolute !important;
+}
+
+/* 3) Lower overlays as width shrinks (smooth progression) */
+@media (max-width: 1100px) {
+  .add-coal-overlay,
+  .arrow-overlay {
+    top: 7% !important;
+    transform: translateY(3px) !important;
+    right: 9% !important;
+  }
+}
+@media (max-width: 900px) {
+  .add-coal-overlay,
+  .arrow-overlay {
+    top: 10% !important;
+    transform: translateY(6px) !important;
+    right: 10% !important;
+    width: 44px; height: 44px; font-size: 20px;
+  }
+}
+@media (max-width: 600px) {
+  .add-coal-overlay,
+  .arrow-overlay {
+    top: 14% !important;
+    transform: translateY(8px) !important;
+    right: 12% !important;
+    width: 42px; height: 42px; font-size: 18px;
+  }
+}
+@media (max-width: 420px) {
+  .add-coal-overlay,
+  .arrow-overlay {
+    top: 18% !important;
+    transform: translateY(10px) !important;
+    right: 14% !important;
+    width: 40px; height: 40px; font-size: 17px;
+  }
+}
+
+/* 4) If overlay icons still overlap text, push them lower when bunker has labels at top/bottom */
+.bunker.has-top-label .add-coal-overlay,
+.bunker.has-top-label .arrow-overlay {
+  top: calc(6% + 10px) !important;
+}
+.bunker.has-bottom-label .add-coal-overlay,
+.bunker.has-bottom-label .arrow-overlay {
+  top: calc(12% + 8px) !important;
+}
+
+/* 5) Horizontal scroll strategy for narrow screens:
+   - Keep the desktop layout intact by preserving its min width,
+   - allow page to scroll horizontally instead of collapsing vertically,
+   - prevent vertical scrolling to avoid distortion of fixed-position overlays. */
+
+/* Container selectors used in your project: .main-container, .diagram-in-grid, .bunkers-grid, .mills-grid
+   If you have a different outer wrapper, add it to the selectors below. */
+@media (max-width: 980px) {
+  html, body {
+    height: 100%;
+    overflow-x: auto;    /* enable horizontal scrolling */
+    overflow-y: hidden;  /* disable vertical scroll to avoid layout collapse/distortion */
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+  }
+
+  /* Make the main page content keep its intended width so horizontal scroll appears */
+  .main-container,
+  .app-wrapper,
+  .dashboard-wrapper {
+    min-width: 1000px;     /* adjust if your desktop layout is wider or narrower */
+    width: auto !important;
+  }
+
+  /* allow the diagram portion to scroll horizontally inside itself if needed */
+  .diagram-in-grid,
+  .mills-grid,
+  .bunkers-grid {
+    min-width: 900px; /* keeps columns from squashing vertically */
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  /* ensure bunkers are not forcing vertical overflow */
+  .bunkers-grid .bunker { display: inline-block; vertical-align: top; width: 260px; margin-right: 12px; }
+}
+
+/* On very small phones provide a smaller min-width to reduce required horizontal pan */
+@media (max-width: 420px) {
+  html, body { overflow-x: auto; overflow-y: hidden; }
+  .main-container, .app-wrapper, .dashboard-wrapper { min-width: 820px; }
+
+  .diagram-in-grid, .mills-grid, .bunkers-grid { min-width: 720px; }
+  .bunkers-grid .bunker { width: 220px; margin-right: 10px; }
+}
+
+/* 6) Make sure popup overlays and modals allow internal vertical scroll (so content inside popup can still scroll).
+   This prevents the entire page from needing to vertically scroll while preserving the horizontal layout. */
+.popup-content, .modal-content {
+  max-height: 88vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 7) Defensive: if your JS toggles a 'mobile-scroll' class, prefer that to manipulating body overflow in JS.
+   But here's a helper rule just in case your app adds .allow-vertical on body for forms */
+body.allow-vertical {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* 8) Tap feedback: make sure overlays have clear touch feedback on mobile */
+@media (pointer: coarse) {
+  .add-coal-overlay, .arrow-overlay {
+    -webkit-tap-highlight-color: rgba(0,0,0,0.06);
+    touch-action: manipulation;
+  }
+  .add-coal-overlay:active, .arrow-overlay:active {
+    transform: translateY(12px) scale(0.98);
+    opacity: 0.94;
+  }
+}
