@@ -7,13 +7,13 @@ const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
 const xlsx = require('xlsx');
-
+const fs=require('fs');
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '8mb' }));
 app.use(express.static(path.join(__dirname)));
 
-app.get('/', (req, res) => res.send('Coal Blend API running'));
+//app.get('/', (req, res) => res.send('Coal Blend API running'));
 
 const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL || process.env.MONGO;
 if (!MONGO_URI) {
@@ -557,6 +557,42 @@ app.get('/api/units/summary', async (req, res) => {
   }
 });
 
-/* -------------------- Start server -------------------- */
+const candidates = [
+  path.join(__dirname, '..', 'dist'),
+  path.join(__dirname, '..', 'client', 'dist'),
+  path.join(__dirname, 'dist'),
+  path.join(__dirname, '..', 'client', 'build')
+];
+
+let clientDist = null;
+for (const c of candidates) {
+  if (fs.existsSync(c) && fs.statSync(c).isDirectory()) {
+    clientDist = c;
+    break;
+  }
+}
+
+if (clientDist) {
+  console.log('✅ Serving frontend from:', clientDist);
+  app.use(express.static(clientDist, { maxAge: '1d' }));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
+    const indexHtml = path.join(clientDist, 'index.html');
+    if (fs.existsSync(indexHtml)) return res.sendFile(indexHtml);
+    console.warn('index.html not found in', clientDist);
+    return res.status(500).send('Frontend built but index.html missing');
+  });
+} else {
+  console.warn('⚠️ Frontend build not found in any of the expected locations:');
+  candidates.forEach(c => console.warn('   -', c));
+  app.get('/', (req, res) => res.send('Coal Blend API running (frontend not built)'));
+}
+
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: 'API endpoint not found' });
+});
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server listening on ${PORT} (0.0.0.0)`);
+});
