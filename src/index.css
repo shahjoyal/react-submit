@@ -401,7 +401,7 @@ html, body {
 }
 
 /* final safety: ensure no body scrollbars */
-html, body { overflow: hidden; }
+html, body { overflow:auto; }
 
 /* timer blink warning */
 @keyframes timerBlink {
@@ -669,7 +669,7 @@ html, body { overflow: hidden; }
    ------------------------ */
 @media (max-width: 980px) {
   /* allow vertical scroll on small screens (overrides earlier overflow: hidden) */
-  html, body { overflow: auto; touch-action: pan-y; }
+  html, body { overflow: visible; touch-action: pan-y; }
 
   /* hide the fixed sidebar (already in CSS) and reclaim full width */
   .side-bar { display: none !important; }
@@ -697,7 +697,7 @@ html, body { overflow: hidden; }
 
   /* allow mills grid to scroll horizontally if cramped */
   .mills-grid {
-    overflow-x: auto;
+    overflow-x: visible;
     -webkit-overflow-scrolling: touch;
     grid-auto-flow: column;
     grid-auto-columns: minmax(96px, 1fr);
